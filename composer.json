@@ -62,7 +62,7 @@
   },
   "autoload": {
     "psr-4": {
-      "Item": "src/"
+      "Item\\": "src/"
     }
   },
   "scripts": {
@@ -79,5 +79,10 @@
     ],
     "serve": "php -S 0.0.0.0:8080 -t public/ public/index.php",
     "test": "phpunit"
+  },
+  "extra": {
+    "zf": {
+      "module": "Item"
+    }
   }
 }

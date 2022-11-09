@@ -2,11 +2,21 @@
 namespace Item;
 
 use Laminas\ApiTools\ApiProblem\ApiProblem;
+use Laminas\ApiTools\ContentNegotiation\ViewModel;
 use Laminas\ApiTools\Rest\AbstractResourceListener;
 use Laminas\Stdlib\Parameters;
+use stdClass;
 
 class ItemResource extends AbstractResourceListener
 {
+
+    public function __construct(
+        private readonly ItemTableGateway $itemTbl
+    )
+    {
+
+    }
+
     /**
      * Create a resource
      *
@@ -51,15 +61,19 @@ class ItemResource extends AbstractResourceListener
         return new ApiProblem(405, 'The GET method has not been defined for individual resources');
     }
 
-    /**
-     * Fetch all or a subset of resources
-     *
-     * @param  array|Parameters $params
-     * @return ApiProblem|mixed
-     */
-    public function fetchAll($params = [])
+    public function fetchAll($params = []) : ApiProblem|stdClass
     {
-        return new ApiProblem(405, 'The GET method has not been defined for collections');
+        $items = $this->itemTbl->getAllItems();
+
+        $itemList = [];
+        foreach ($items as $item) {
+            $itemList[] = $item->getApiObject();
+        }
+
+        return (object)[
+            'items' => $itemList,
+            'total_items' => $this->itemTbl->getItemCount()
+        ];
     }
 
     /**

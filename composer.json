@@ -28,7 +28,7 @@
     }
   },
   "require": {
-    "php": "^7.3 || ~8.0.0 || ~8.1.0",
+    "php": "~8.1.0",
     "laminas-api-tools/api-tools": "^1.6.0",
     "laminas-api-tools/api-tools-content-negotiation": "^1.6.0",
     "laminas-api-tools/api-tools-documentation": "^1.3",

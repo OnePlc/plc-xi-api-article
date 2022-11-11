@@ -1,6 +1,7 @@
 <?php
 namespace Item;
 
+use Application\Form\FormService;
 use Laminas\ApiTools\ApiProblem\ApiProblem;
 use Laminas\ApiTools\Rest\AbstractResourceListener;
 use stdClass;
@@ -9,14 +10,30 @@ class ItemResource extends AbstractResourceListener
 {
 
     public function __construct(
-        private readonly ItemTableGateway $itemTbl
+        private readonly ItemTableGateway $itemTbl,
+        private readonly FormService $formService,
     )
     {
     }
 
-    public function create($data) : ApiProblem
+    public function create($data) : ApiProblem|stdClass
     {
-        return new ApiProblem(405, 'The POST method has not been defined');
+        $indexColumns = $this->formService->getListColumnsByFormKey('article', false);
+
+        $saveData = [];
+
+        foreach ($indexColumns as $column) {
+            if (property_exists($data, $column['field_key'])) {
+                $key = $column['field_key'];
+                $saveData[$column['field_key']] = $data->$key;
+            }
+        }
+
+        $this->itemTbl->insert($saveData);
+
+        return (object)[
+            'id' => $this->itemTbl->lastInsertValue
+        ];
     }
 
     public function delete($id) : ApiProblem
@@ -36,16 +53,21 @@ class ItemResource extends AbstractResourceListener
 
     public function fetchAll($params = []) : ApiProblem|stdClass
     {
-        $items = $this->itemTbl->getAllItems();
+        $indexColumns = $this->formService->getListColumnsByFormKey('article', true);
 
+        $items = $this->itemTbl->getAllItems();
         $itemList = [];
         foreach ($items as $item) {
-            $itemList[] = $item->getApiObject();
+            $itemList[] = $item->getApiObject($indexColumns);
         }
+
 
         return (object)[
             'items' => $itemList,
-            'total_items' => $this->itemTbl->getItemCount()
+            'total_items' => $this->itemTbl->getItemCount(),
+            'list' => [
+                'columns' => $indexColumns
+            ]
         ];
     }
 

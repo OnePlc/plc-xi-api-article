@@ -122,13 +122,6 @@ return [
                 'description' => 'List of Items',
                 'allow_empty' => true,
             ],
-            1 => [
-                'required' => true,
-                'validators' => [],
-                'filters' => [],
-                'name' => 'ack',
-                'description' => 'asdad',
-            ],
         ],
     ],
 ];

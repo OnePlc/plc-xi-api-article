@@ -18,14 +18,14 @@ class ItemResource extends AbstractResourceListener
 
     public function create($data) : ApiProblem|stdClass
     {
-        $indexColumns = $this->formService->getListColumnsByFormKey('article', false);
+        $formFields = $this->formService->getFieldsByFormKey('article', true);
 
         $saveData = [];
 
-        foreach ($indexColumns as $column) {
-            if (property_exists($data, $column['field_key'])) {
-                $key = $column['field_key'];
-                $saveData[$column['field_key']] = $data->$key;
+        foreach ($formFields as $field) {
+            if (property_exists($data, $field['field_key'])) {
+                $key = $field['field_key'];
+                $saveData[$field['field_key']] = $data->$key;
             }
         }
 
@@ -36,7 +36,7 @@ class ItemResource extends AbstractResourceListener
         ];
     }
 
-    public function delete($id) : ApiProblem|stdClass
+    public function delete($id) : ApiProblem|bool
     {
         $itemId = filter_var($id, FILTER_SANITIZE_NUMBER_INT);
 
@@ -50,7 +50,7 @@ class ItemResource extends AbstractResourceListener
         }
 
         if ($this->itemTbl->removeItem($itemId)) {
-            return (object)['state' => 'success'];
+            return true;
         }
 
         return new ApiProblem(400, 'could not delete item');
@@ -64,17 +64,21 @@ class ItemResource extends AbstractResourceListener
     public function fetch($id) : ApiProblem|stdClass
     {
         $itemId = filter_var($id, FILTER_SANITIZE_NUMBER_INT);
+        $formFields = $this->formService->getFieldsByFormKey('article', true);
 
         if ($itemId <= 0) {
-            return new ApiProblem(400, 'invalid item id');
+            return (object)[
+                'form' => [
+                    'fields' => $formFields
+                ],
+                'item' => null
+            ];
         }
 
         $item = $this->itemTbl->getItem($itemId);
         if ($item === null) {
             return new ApiProblem(404, 'invalid item id');
         }
-
-        $formFields = $this->formService->getFieldsByFormKey('article', true);
 
         return (object)[
             'form' => [

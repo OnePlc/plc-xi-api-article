@@ -31,14 +31,19 @@ class ItemEntity
         foreach($filters as $filter) {
             if (array_key_exists($filter['field_key'], $this->dynamicAttributes)) {
                 $apiObject[$filter['field_key']] = match($filter['field_type']) {
-                    FormListTypeEnum::CURRENCY->value => 'CHF '
-                        . number_format(
-                            $this->dynamicAttributes[$filter['field_key']]
-                            , 2
-                            , '.'
-                            , '\''
-                        ),
-                    default =>  $this->dynamicAttributes[$filter['field_key']]
+                    FormListTypeEnum::CURRENCY->value => [
+                        'prefix' => 'CHF ',
+                        'appendix' => '',
+                        'value' => number_format(
+                                $this->dynamicAttributes[$filter['field_key']]
+                                , 2
+                                , '.'
+                                , '\''
+                            )
+                    ],
+                    default => [
+                        'value' => $this->dynamicAttributes[$filter['field_key']]
+                    ]
                 };
             }
         }

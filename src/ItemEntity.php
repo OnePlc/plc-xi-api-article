@@ -22,7 +22,7 @@ class ItemEntity
         }
     }
 
-    public function getApiObject(array $filters = null) : array
+    public function getApiObject(array $filters = []) : array
     {
         $apiObject = [
             'id' => $this->id

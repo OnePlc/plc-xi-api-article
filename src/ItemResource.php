@@ -36,9 +36,24 @@ class ItemResource extends AbstractResourceListener
         ];
     }
 
-    public function delete($id) : ApiProblem
+    public function delete($id) : ApiProblem|stdClass
     {
-        return new ApiProblem(405, 'The DELETE method has not been defined for individual resources');
+        $itemId = filter_var($id, FILTER_SANITIZE_NUMBER_INT);
+
+        if ($itemId <= 0) {
+            return new ApiProblem(400, 'invalid item id');
+        }
+
+        $item = $this->itemTbl->getItem($itemId);
+        if ($item === null) {
+            return new ApiProblem(404, 'invalid item id');
+        }
+
+        if ($this->itemTbl->removeItem($itemId)) {
+            return (object)['state' => 'success'];
+        }
+
+        return new ApiProblem(400, 'could not delete item');
     }
 
     public function deleteList($data) : ApiProblem
@@ -46,9 +61,27 @@ class ItemResource extends AbstractResourceListener
         return new ApiProblem(405, 'The DELETE method has not been defined for collections');
     }
 
-    public function fetch($id) : ApiProblem
+    public function fetch($id) : ApiProblem|stdClass
     {
-        return new ApiProblem(405, 'The GET method has not been defined for individual resources');
+        $itemId = filter_var($id, FILTER_SANITIZE_NUMBER_INT);
+
+        if ($itemId <= 0) {
+            return new ApiProblem(400, 'invalid item id');
+        }
+
+        $item = $this->itemTbl->getItem($itemId);
+        if ($item === null) {
+            return new ApiProblem(404, 'invalid item id');
+        }
+
+        $formFields = $this->formService->getFieldsByFormKey('article', true);
+
+        return (object)[
+            'form' => [
+                'fields' => $formFields
+            ],
+            'item' => $item->getApiObject($formFields)
+        ];
     }
 
     public function fetchAll($params = []) : ApiProblem|stdClass
@@ -57,10 +90,10 @@ class ItemResource extends AbstractResourceListener
 
         $items = $this->itemTbl->getAllItems();
         $itemList = [];
+
         foreach ($items as $item) {
             $itemList[] = $item->getApiObject($indexColumns);
         }
-
 
         return (object)[
             'items' => $itemList,

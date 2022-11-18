@@ -20,8 +20,33 @@ class ItemTableGateway extends TableGateway
         return $itemCollection;
     }
 
+    public function getItem(int $itemId): ?ItemEntity
+    {
+        $select = new Select($this->getTable());
+        $select->where(['id' => $itemId]);
+
+        $itemRaw = $this->selectWith($select);
+        if ($itemRaw->count() === 0) {
+            return null;
+        }
+
+        $itemRaw = $itemRaw->current();
+
+        return new ItemEntity($itemRaw);
+    }
+
     public function getItemCount(): int
     {
         return $this->select()->count();
+    }
+
+    public function removeItem(int $itemId): bool
+    {
+        if ($itemId <= 0) {
+            return false;
+        }
+        $this->delete(['id' => $itemId]);
+
+        return true;
     }
 }

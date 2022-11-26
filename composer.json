@@ -1,5 +1,5 @@
 {
-  "name": "plc/article",
+  "name": "plc-xi/article",
   "description": "onePlace XI Api Article Module",
   "type": "oneplace-api-module",
   "license": "BSD-3-Clause",
@@ -7,16 +7,14 @@
     "laminas",
     "api-tools",
     "api",
-    "framework"
+    "framework",
+    "plc-xi"
   ],
-  "homepage": "https://api-tools.getlaminas.org",
+  "homepage": "https://xi.1plc.ch",
   "support": {
-    "docs": "https://api-tools.getlaminas.org/documentation",
-    "issues": "https://github.com/laminas-api-tools/api-tools-skeleton/issues",
-    "source": "https://github.com/laminas-api-tools/api-tools-skeleton",
-    "rss": "https://github.com/laminas-api-tools/api-tools-skeleton/releases.atom",
-    "chat": "https://laminas.dev/chat",
-    "forum": "https://discourse.laminas.dev"
+    "docs": "https://xi.1plc.ch/documentation",
+    "issues": "https://github.com/OnePlc/plc-xi-api-article/issues",
+    "source": "https://github.com/OnePlc/plc-xi-api-article"
   },
   "config": {
     "process-timeout": 5000,
@@ -35,7 +33,8 @@
     "laminas-api-tools/api-tools-rest": "^1.6.1",
     "laminas/laminas-component-installer": "^2.1.1",
     "laminas/laminas-development-mode": "^3.2",
-    "laminas/laminas-zendframework-bridge": "^1.0"
+    "laminas/laminas-zendframework-bridge": "^1.0",
+    "plc-xi/core": "dev-main"
   },
   "require-dev": {
     "laminas-api-tools/api-tools-admin": "^2.0.1",
@@ -47,8 +46,7 @@
     "laminas/laminas-test": "^4.0",
     "phpunit/phpunit": "^9.5.20",
     "psalm/plugin-phpunit": "^0.16.1",
-    "roave/security-advisories": "dev-master",
-    "vimeo/psalm": "^4.10"
+    "roave/security-advisories": "dev-master"
   },
   "conflict": {
     "laminas/laminas-hydrator": "<2.0",

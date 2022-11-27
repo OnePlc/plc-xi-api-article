@@ -49,4 +49,9 @@ class ItemTableGateway extends TableGateway
 
         return true;
     }
+
+    public function saveItem(int $itemId, array $itemData): bool
+    {
+        return $this->update($itemData, ['id' => $itemId]);
+    }
 }

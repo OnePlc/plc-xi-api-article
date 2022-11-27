@@ -123,8 +123,34 @@ class ItemResource extends AbstractResourceListener
         return new ApiProblem(405, 'The PUT method has not been defined for collections');
     }
 
-    public function update($id, $data) : ApiProblem
+    public function update($id, $data) : object
     {
-        return new ApiProblem(405, 'The PUT method has not been defined for individual resources');
+        $itemId = filter_var($id, FILTER_SANITIZE_NUMBER_INT);
+
+        if ($itemId <= 0) {
+            return new ApiProblem(400, 'invalid item id');
+        }
+
+        $item = $this->itemTbl->getItem($itemId);
+        if ($item === null) {
+            return new ApiProblem(404, 'invalid item id');
+        }
+
+        $formFields = $this->formService->getFieldsByFormKey('article', true);
+
+        $saveData = [];
+
+        foreach ($formFields as $field) {
+            if (property_exists($data, $field['field_key'])) {
+                $key = $field['field_key'];
+                $saveData[$field['field_key']] = $data->$key;
+            }
+        }
+
+        $this->itemTbl->saveItem($itemId, $saveData);
+
+        return (object)[
+            'item' => $item->getApiObject($formFields)
+        ];
     }
 }
